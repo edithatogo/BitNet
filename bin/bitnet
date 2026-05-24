@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+python_bin="$repo_root/.venv/bin/python"
+model_path="$repo_root/models/BitNet-b1.58-2B-4T/ggml-model-i2_s.gguf"
+
+if [[ ! -x "$python_bin" ]]; then
+  echo "BitNet venv not found at $python_bin" >&2
+  exit 1
+fi
+
+if [[ ! -e "$model_path" ]]; then
+  echo "BitNet model not found at $model_path" >&2
+  exit 1
+fi
+
+if [[ $# -eq 0 ]]; then
+  cat >&2 <<'USAGE'
+Usage:
+  bin/bitnet -p "Your prompt" [run_inference.py options]
+  bin/bitnet "Your prompt"
+USAGE
+  exit 2
+fi
+
+if [[ "${1:0:1}" != "-" ]]; then
+  prompt="$1"
+  shift
+  set -- -p "$prompt" "$@"
+fi
+
+has_threads=false
+has_context=false
+for arg in "$@"; do
+  case "$arg" in
+    -t|--threads) has_threads=true ;;
+    -c|--ctx-size) has_context=true ;;
+  esac
+done
+
+defaults=(-m "$model_path")
+if [[ "$has_threads" == false ]]; then
+  defaults+=(-t "${BITNET_THREADS:-8}")
+fi
+if [[ "$has_context" == false ]]; then
+  defaults+=(-c "${BITNET_CTX_SIZE:-2048}")
+fi
+
+exec "$python_bin" "$repo_root/run_inference.py" "${defaults[@]}" "$@"

@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: If you use this fork, please cite it using these metadata and identify the
+  commit or release used. Upstream attribution is recorded in references.
+title: bitnet.cpp
+authors:
+- name: Microsoft Corporation
+- name: BitNet contributors
+repository-code: https://github.com/edithatogo/BitNet
+url: https://github.com/edithatogo/BitNet
+references:
+- type: software
+  title: bitnet.cpp
+  authors:
+  - name: Microsoft Corporation
+  - name: BitNet contributors
+  repository-code: https://github.com/microsoft/BitNet
+  url: https://github.com/microsoft/BitNet
